@@ -5,6 +5,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 
+
 class UserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
@@ -33,6 +34,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         except Exception as e:
             return f'{e}, Ошибка при создании'
 
+
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
@@ -58,6 +60,7 @@ class LoginSerializer(serializers.Serializer):
             'refresh': str(refresh)
         }
 
+
 class LogoutSerializer(serializers.Serializer):
     refresh = serializers.CharField()
 
@@ -72,15 +75,18 @@ class LogoutSerializer(serializers.Serializer):
         except Exception as e:
             raise serializers.ValidationError({'detail': 'Недействительный или уже отозванный токен'})
 
+
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = ['id', 'username', 'email', 'password', 'role', 'phone_number', 'avatar']
 
+
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
         fields = ['id', 'property', 'image']
+
 
 class PropertySerializer(serializers.ModelSerializer):
     images = ImageSerializer(many=True, read_only=True)
@@ -94,6 +100,7 @@ class PropertySerializer(serializers.ModelSerializer):
             'owner', 'images', 'is_active'
         ]
 
+
 class BookingSerializer(serializers.ModelSerializer):
     property = serializers.StringRelatedField()
     guest = serializers.StringRelatedField()
@@ -102,6 +109,7 @@ class BookingSerializer(serializers.ModelSerializer):
         model = Booking
         fields = ['id', 'property', 'guest', 'check_in', 'check_out', 'status', 'created_at']
 
+
 class ReviewSerializer(serializers.ModelSerializer):
     guest = serializers.StringRelatedField(read_only=True)
     property = serializers.StringRelatedField(read_only=True)
@@ -109,3 +117,17 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = ['id', 'property', 'guest', 'rating', 'comment', 'created_at']
+
+
+class PropertyDetailSerializer(serializers.ModelSerializer):
+    images = ImageSerializer(many=True, read_only=True)
+    owner = serializers.StringRelatedField(read_only=True)
+    reviews = ReviewSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Property
+        fields = [
+            'id', 'title', 'description', 'price_per_night', 'city', 'address',
+            'property_type', 'rules', 'max_guests', 'bedrooms', 'bathrooms',
+            'owner', 'images', 'is_active', 'reviews'
+        ]

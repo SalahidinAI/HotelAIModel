@@ -1,10 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import (
-    UserViewSet, PropertyViewSet, ImageViewSet,
-    BookingViewSet, ReviewViewSet,
-    CustomLoginView, UserRegisterView, LogoutView
-)
+from .views import *
 
 router = DefaultRouter()
 router.register('users', UserViewSet)
@@ -18,5 +14,6 @@ urlpatterns = [
     path('register/', UserRegisterView.as_view(), name='register'),
     path('login/', CustomLoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
+    path('property/<int:pk>/', PropertyDetailAPIView.as_view(), name='property_detail')
 
 ]

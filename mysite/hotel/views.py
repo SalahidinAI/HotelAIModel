@@ -52,6 +52,11 @@ class PropertyViewSet(viewsets.ModelViewSet):
         serializer.save(owner=self.request.user)
 
 
+class PropertyDetailAPIView(generics.RetrieveAPIView):
+    queryset = Property.objects.all()
+    serializer_class = PropertyDetailSerializer
+
+
 class ImageViewSet(viewsets.ModelViewSet):
     queryset = Image.objects.all()
     serializer_class = ImageSerializer

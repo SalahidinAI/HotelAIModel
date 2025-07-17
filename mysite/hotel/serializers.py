@@ -4,6 +4,17 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+import joblib
+from django.conf import settings
+import os
+
+
+model_path = os.path.join(settings.BASE_DIR, 'model_nb.pkl')
+vector_path = os.path.join(settings.BASE_DIR, 'vector.pkl')
+
+
+model = joblib.load(model_path)
+vector = joblib.load(vector_path)
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
@@ -113,10 +124,14 @@ class BookingSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     guest = serializers.StringRelatedField(read_only=True)
     property = serializers.StringRelatedField(read_only=True)
+    check_comment = serializers.SerializerMethodField()
 
     class Meta:
         model = Review
-        fields = ['id', 'property', 'guest', 'rating', 'comment', 'created_at']
+        fields = ['id', 'property', 'guest', 'rating', 'comment', 'check_comment', 'created_at']
+
+    def get_check_comment(self, obj):
+        return model.predict(vector.transform([obj.comment]))
 
 
 class PropertyDetailSerializer(serializers.ModelSerializer):
